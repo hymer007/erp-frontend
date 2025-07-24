@@ -1,12 +1,19 @@
 FROM node:18-alpine
 
+# Arbeitsverzeichnis setzen
 WORKDIR /app
+
+# System-Updates und dependencies
+RUN apk add --no-cache git
+
+# NPM cache leeren und neueste npm version
+RUN npm cache clean --force && npm install -g npm@latest
 
 # Package files kopieren
 COPY package*.json ./
 
-# Dependencies installieren
-RUN npm ci
+# Dependencies installieren mit verbose logging
+RUN npm ci --verbose --no-audit --no-fund
 
 # Source code kopieren
 COPY . .
