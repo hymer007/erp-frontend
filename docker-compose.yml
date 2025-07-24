@@ -1,36 +1,29 @@
 version: '3.8'
 
 services:
+  # Production mit Build
   erp-frontend:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
 
-  # Development Version (optional)
+  # Development ohne Build (Fallback)
   erp-frontend-dev:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
-      - "3001:3000"
+      - "3002:3000"  # Geändert auf 3002 wegen Backend auf 3001
     environment:
       - NODE_ENV=development
     volumes:
       - ./src:/app/src
-      - ./public:/app/public
-    command: npm run dev
     profiles:
       - dev
 
-  # Optional: Backend service
-  # erp-backend:
-  #   image: node:18-alpine
-  #   working_dir: /app
-  #   volumes:
-  #     - ./backend:/app
-  #   ports:
-  #     - "3001:3001"
-  #   command: npm start
-  #   environment:
-  #     - NODE_ENV=production
+  # Dein bestehendes Backend läuft bereits auf 3001

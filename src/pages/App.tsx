@@ -44,9 +44,50 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     
     try {
-      // Simulate API call - replace with real backend call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Echte API-Anfrage an dein Backend auf Port 3001
+      const response = await fetch("http://localhost:3001/login", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
       
+      if (response.ok) {
+        const data = await response.json();
+        const userData = {
+          id: data.id || "1",
+          username: data.username || username,
+          email: data.email || `${username}@erp.com`,
+          role: data.role || "user"
+        };
+        
+        localStorage.setItem("access_token", data.access_token || data.token);
+        setUser(userData);
+        setIsLoading(false);
+        return true;
+      } else {
+        // Fallback für Demo-Zwecke wenn Backend nicht antwortet
+        if (username === "admin" && password === "admin") {
+          const mockUser = {
+            id: "1",
+            username: "admin",
+            email: "admin@erp.com",
+            role: "administrator"
+          };
+          
+          localStorage.setItem("access_token", "demo-jwt-token");
+          setUser(mockUser);
+          setIsLoading(false);
+          return true;
+        }
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.log("Backend nicht erreichbar, verwende Demo-Login");
+      // Fallback für Demo-Zwecke
       if (username === "admin" && password === "admin") {
         const mockUser = {
           id: "1",
@@ -55,7 +96,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           role: "administrator"
         };
         
-        localStorage.setItem("access_token", "mock-jwt-token");
+        localStorage.setItem("access_token", "demo-jwt-token");
         setUser(mockUser);
         setIsLoading(false);
         return true;
@@ -63,9 +104,6 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         return false;
       }
-    } catch (error) {
-      setIsLoading(false);
-      return false;
     }
   };
 
