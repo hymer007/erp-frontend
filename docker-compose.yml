@@ -1,12 +1,42 @@
 version: '3.8'
+
 services:
-  frontend:
+  erp-frontend:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
     volumes:
-      - .:/app
-    working_dir: /app
-    command: npm run dev
+      - ./src:/app/src  # Für Development (optional)
+    command: npm run preview -- --host 0.0.0.0 --port 3000
+
+  # Development Version (optional)
+  erp-frontend-dev:
+    build: .
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=development
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.ts:/app/vite.config.ts
+      - ./tailwind.config.js:/app/tailwind.config.js
+    command: npm run dev -- --host 0.0.0.0
+    profiles:
+      - dev
+
+  # Optional: Backend service
+  # erp-backend:
+  #   image: node:18-alpine
+  #   working_dir: /app
+  #   volumes:
+  #     - ./backend:/app
+  #   ports:
+  #     - "3001:3001"
+  #   command: npm start
+  #   environment:
+  #     - NODE_ENV=production

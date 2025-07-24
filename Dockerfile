@@ -1,11 +1,21 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
+# Package files kopieren
 COPY package*.json ./
-RUN npm install
 
+# Dependencies installieren
+RUN npm ci
+
+# Source code kopieren
 COPY . .
 
+# App bauen
+RUN npm run build
+
+# Port freigeben
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+
+# Preview server starten (Vite's production server)
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
