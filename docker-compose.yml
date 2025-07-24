@@ -8,24 +8,18 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-    volumes:
-      - ./src:/app/src  # Für Development (optional)
-    command: npm run preview -- --host 0.0.0.0 --port 3000
 
   # Development Version (optional)
   erp-frontend-dev:
     build: .
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - NODE_ENV=development
     volumes:
       - ./src:/app/src
       - ./public:/app/public
-      - ./index.html:/app/index.html
-      - ./vite.config.ts:/app/vite.config.ts
-      - ./tailwind.config.js:/app/tailwind.config.js
-    command: npm run dev -- --host 0.0.0.0
+    command: npm run dev
     profiles:
       - dev
 
