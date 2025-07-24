@@ -6,11 +6,21 @@ WORKDIR /app
 # Package files kopieren
 COPY package.json ./
 
-# Dependencies installieren (ohne cache clearing)
+# Dependencies installieren
 RUN npm install
 
-# Source code kopieren
-COPY . .
+# Source code kopieren (wichtig: richtige Reihenfolge)
+COPY index.html ./
+COPY src/ ./src/
+COPY public/ ./public/
+COPY vite.config.ts ./
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+
+# Debugging: Struktur anzeigen
+RUN ls -la && ls -la src/
 
 # App bauen
 RUN npm run build
