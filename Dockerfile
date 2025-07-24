@@ -1,38 +1,30 @@
-FROM node:18-alpine
-
-# Arbeitsverzeichnis setzen
+# Stage 1: Build
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Package files kopieren
-COPY package.json ./
-
-# Dependencies installieren
+# Abhängigkeiten installieren
+COPY package*.json ./
 RUN npm install
 
-# Config files kopieren
-COPY vite.config.ts ./
-COPY tsconfig.json ./
-COPY tsconfig.node.json ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
-
-# HTML file kopieren
-COPY index.html ./
-
-# Source code kopieren
-COPY src/ ./src/
-
-# Public ordner erstellen (falls nicht vorhanden)
-RUN mkdir -p public
-
-# Debugging: Struktur anzeigen
-RUN ls -la && ls -la src/
-
-# App bauen
+# Quellcode kopieren und bauen
+COPY . .
 RUN npm run build
+
+# Stage 2: Serve-Server
+FROM node:18-alpine
+WORKDIR /app
+
+# Globale Installation von serve
+RUN npm install -g serve
+
+# Build-Artefakte kopieren
+COPY --from=builder /app/dist ./dist
+
+# Arbeitsverzeichnis auf dist setzen
+WORKDIR /app/dist
 
 # Port freigeben
 EXPOSE 3000
 
-# Preview server starten
-CMD ["npm", "run", "preview"]
+# Statische Dateien ausliefern auf Port 3000
+CMD ["serve", "-s", ".", "-l", "3000"]
