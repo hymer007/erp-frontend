@@ -1,10 +1,8 @@
-version: "3.8"
+
+version: '3'
 services:
   frontend:
     build: .
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-    stdin_open: true
-    tty: true
+      - "5173:5173"
+    restart: always

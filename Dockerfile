@@ -1,18 +1,8 @@
-# Base image
-FROM node:18
 
-# Set working directory
+FROM node:18-alpine
 WORKDIR /app
-
-# Install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the app
 COPY . .
-
-# Build the app
+RUN npm install
 RUN npm run build
-
-# Start the app
-CMD ["npm", "run", "start"]
+RUN npm install -g serve
+CMD ["serve", "-s", "dist", "-l", "5173"]
