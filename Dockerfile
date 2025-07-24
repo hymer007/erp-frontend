@@ -1,28 +1,27 @@
-# Build Stage
+# Build-Stage
 FROM node:18-alpine as builder
 
 WORKDIR /app
 
-# Package files kopieren für besseres Caching
 COPY package*.json ./
-
-# Alle Dependencies installieren (inkl. devDependencies für Build)
 RUN npm install
 
-# Quellcode kopieren
 COPY . .
-
-# Build ausführen
 RUN npm run build
 
-# Production Stage
-FROM nginx:alpine
+# Production-Stage ohne NGINX
+FROM node:18-alpine
 
-# Built files aus dem Builder-Stage kopieren
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Port freigeben
-EXPOSE 80
+# Nur das Build kopieren
+COPY --from=builder /app/build ./build
 
-# Nginx starten
-CMD ["nginx", "-g", "daemon off;"]
+# Static Server installieren
+RUN npm install -g serve
+
+# Port 3000 freigeben
+EXPOSE 3000
+
+# React-Build mit "serve" auf Port 3000 starten
+CMD ["serve", "-s", "build", "-l", "3000"]
