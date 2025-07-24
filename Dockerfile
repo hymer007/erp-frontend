@@ -9,15 +9,21 @@ COPY package.json ./
 # Dependencies installieren
 RUN npm install
 
-# Source code kopieren (wichtig: richtige Reihenfolge)
-COPY index.html ./
-COPY src/ ./src/
-COPY public/ ./public/
+# Config files kopieren
 COPY vite.config.ts ./
 COPY tsconfig.json ./
 COPY tsconfig.node.json ./
 COPY tailwind.config.js ./
 COPY postcss.config.js ./
+
+# HTML file kopieren
+COPY index.html ./
+
+# Source code kopieren
+COPY src/ ./src/
+
+# Public ordner erstellen (falls nicht vorhanden)
+RUN mkdir -p public
 
 # Debugging: Struktur anzeigen
 RUN ls -la && ls -la src/
